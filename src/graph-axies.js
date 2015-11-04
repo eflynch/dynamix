@@ -13,7 +13,7 @@ var Axis = React.createClass({
     },
     onChangeX: function (e){
         this.props.onChange({
-            x: e.target.value,
+            x: true,
             y: this.props.y,
             v: this.props.value
         });
@@ -21,7 +21,7 @@ var Axis = React.createClass({
     onChangeY: function (e){
         this.props.onChange({
             x: this.props.x,
-            y: e.target.value,
+            y: true,
             v: this.props.value
         });
     },
@@ -29,8 +29,14 @@ var Axis = React.createClass({
         return (
             <div className="axis">
                 <div className="axis-boxes">
-                    <input type="checkbox" checked={this.props.x} onChange={this.onChangeX}/>
-                    <input type="checkbox" checked={this.props.y} onChange={this.onChangeY}/>
+                    <div className="roundedOne">
+                        <input className="roundedOne" type="checkbox" checked={this.props.x} onChange={this.onChangeX}/>
+                        <label className="roundedOne" onClick={this.onChangeX}/>
+                    </div>
+                    <div className="roundedOne">
+                        <input className="roundedOne" type="checkbox" checked={this.props.y} onChange={this.onChangeY}/>
+                        <label className="roundedOne" onClick={this.onChangeY}/>
+                    </div>
                 </div>
                 <div className="axis-slider">
                     <span>{this.props.name} </span>
@@ -59,15 +65,15 @@ var GraphAxies = React.createClass({
                 <Axis key={i} name={this.props.axies[i].name}
                              min={this.props.axies[i].min}
                              max={this.props.axies[i].max}
+                             value={this.props.axies[i].value}
                              x={i === this.props.shownAxies[0]}
                              y={i === this.props.shownAxies[1]}
-                             value={this.props.hiddenValues[i]}
                              onChange={this.onChangeGen(i)}/>
             );
         }
         return (
             <div>
-                <div className="axies-header">x y</div>
+                <div className="axies-header"><span>x</span><span>y</span></div>
                 {axies}
             </div>
         );

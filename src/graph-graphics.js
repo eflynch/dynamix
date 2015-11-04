@@ -100,9 +100,8 @@ var GraphGraphics = React.createClass({
                     pixelToValue={this.pixelToValue}
                     axies={this.props.axies}
                     shownAxies={this.props.shownAxies}
-                    hiddenValues={this.props.hiddenValues}
                     threshold={this.props.threshold}
-                    enabled={this.props.tracksEnabled[i]}
+                    enabled={track.enabled}
                     selected={i === this.props.trackSelected}
                     modifyTrack={function (e) {this.props.modifyTrack(i, e);}.bind(this)}
                     onClick={function () {this.props.selectTrack(i);}.bind(this)}/>
@@ -110,7 +109,11 @@ var GraphGraphics = React.createClass({
         }.bind(this));
     },
     render: function (){
-       return (
+        var xP1 = this.valueToPixel({x: this.xAxis().value, y: this.yAxis().min});
+        var xP2 = this.valueToPixel({x: this.xAxis().value, y: this.yAxis().max});
+        var yP1 = this.valueToPixel({x: this.xAxis().min, y: this.yAxis().value});
+        var yP2 = this.valueToPixel({x: this.xAxis().max, y: this.yAxis().value});
+        return (
             <svg width={this.props.width} height={this.props.height}>
                 <g style={{cursor:"grab"}}>
                     <rect width={this.props.width} height={this.props.height} style={{fill:this.props.backgroundcolor}}
@@ -120,6 +123,8 @@ var GraphGraphics = React.createClass({
                             }
                         }.bind(this)
                     }/>
+                    <line style={{stroke:'red', strokeWidth:5}} x1={xP1.px} x2={xP2.px} y1={xP1.py} y2={xP2.py}/> 
+                    <line style={{stroke:'red', strokeWidth:5}} x1={yP1.px} x2={yP2.px} y1={yP1.py} y2={yP2.py}/> 
                     <GraphLines valueToPixel={this.valueToPixel}
                                 xAxis={this.xAxis()} yAxis={this.yAxis()}
                                 color={this.props.color} />

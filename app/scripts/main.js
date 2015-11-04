@@ -32678,7 +32678,7 @@ var App = React.createClass({
     displayName: "App",
     getInitialState() {
         return {
-            axies: [{name:"x", min:0, max:1}, {name:"y", min:0, max:1}],
+            axies: [{name:"x", min:0, max:1, value:0.5}, {name:"y", min:0, max:1, value:0.5}],
             filename: undefined,
             tracks: [],
             trackSelected: undefined,
@@ -32707,6 +32707,11 @@ var App = React.createClass({
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleRezie);
     }, 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.tracks !== prevState.tracks || this.state.axies !== prevState.axies){
+            this.writeToFile();
+        }  
+    },
     loadFromFile: function (filename){
         $.get('data/' + filename, function (data){
             var tracks = [];
@@ -32726,12 +32731,13 @@ var App = React.createClass({
             this.setState({
                 filename: filename,
                 tracks: tracks,
-                tracksEnabled: tracks.map(function (){return false;}),
                 axies: axies
             });
         }.bind(this));
     },
     writeToFile: function (){
+        var filename = "/Users/eflynch/things/tidmarsh_pieces/bogrock/data/files.txt";
+        if (fs === null){return;}
         var str = "";
         for (var i=0; i < this.state.axies.length; i++){
             str += 'AXIS:::' + formatAxis(this.state.axies[i]) + '\n';
@@ -32739,19 +32745,30 @@ var App = React.createClass({
         for (var i=0; i < this.state.tracks.length; i++){
             str += 'TRACK:::' + formatDistribution(this.state.tracks[i]) + '\n';
         }
-        console.log(str);
+        fs.writeFile(filename, str); 
     },
     toggleTrack: function (i){
+        var hash = {};
+        hash[i] = {enabled: {$set: !this.state.tracks[i].enabled}};
         this.setState({
-            tracksEnabled: update(this.state.tracksEnabled, {[i]: {$set: !this.state.tracksEnabled[i]}})
+            tracks: update(this.state.tracks, hash)
         });
     },
     selectTrack: function (i){
         this.setState({trackSelected: i});
     },
-    modifyTrack: function (i, e){
+    setAxisValue: function (i, v){
+        var hash = {};
+        hash[i] = {value: {$set: v}};
         this.setState({
-            tracks: update(this.state.tracks, {[i]: e})
+            axies: update(this.state.axies, hash)
+        })
+    },
+    modifyTrack: function (i, e){
+        var hash = {};
+        hash[i] = e;
+        this.setState({
+            tracks: update(this.state.tracks, hash)
         });
     },
     render: function (){
@@ -32764,10 +32781,10 @@ var App = React.createClass({
                        height: Math.max(800, this.state.windowHeight), 
                        headerHeight: this.props.headerHeight, 
                        menuWidth: this.props.menuWidth, 
-                       tracksEnabled: this.state.tracksEnabled, 
                        trackSelected: this.state.trackSelected, 
                        selectTrack: this.selectTrack, 
                        modifyTrack: this.modifyTrack, 
+                       setAxisValue: this.setAxisValue, 
                        toggleTrack: this.toggleTrack}
                 )
             )
@@ -32797,27 +32814,25 @@ var Distribution = React.createClass({
     },
     _onDragMove: function (e, deltaPos){
         if (!this.props.selected){return;}
-        
+
         if (this.state.metaKey){
             var newValue = this.props.pixelToValue({px: this.state.dragCP.px + deltaPos.x, py: this.state.dragCP.py + deltaPos.y});
             var oldValue = this.props.pixelToValue({px: this.state.dragCP.px, py: this.state.dragCP.py});
             var sx = Math.max(this.state.dragSig.eig[this.xIdx()] + deltaPos.x / (0.001 + Math.abs(deltaPos.x)) * Math.pow(newValue.x - oldValue.x, 2), 0.001);
             var sy = Math.max(this.state.dragSig.eig[this.yIdx()] + deltaPos.y / (0.001 + Math.abs(deltaPos.y)) * Math.pow(newValue.y - oldValue.y, 2), 0.001);
+            var sigHash = {};
+            sigHash[this.xIdx()] = {$set: Math.round(sx*1000)/1000};
+            sigHash[this.yIdx()] = {$set: Math.round(sy*1000)/1000};
             this.props.modifyTrack({
-                sig: {
-                    eig: {
-                        [this.xIdx()]: {$set: sx},
-                        [this.yIdx()]: {$set: sy}
-                    }
-                }
+                sig: {eig: sigHash}
             });
         } else {
             var newValue = this.props.pixelToValue({px: this.state.dragCP.px + deltaPos.x, py: this.state.dragCP.py + deltaPos.y});
+            var muHash = {};
+            muHash[this.xIdx()] = {$set: Math.round(newValue.x*1000)/1000};
+            muHash[this.yIdx()] = {$set: Math.round(newValue.y*1000)/1000};
             this.props.modifyTrack({
-                mu: {
-                    [this.xIdx()]: {$set: newValue.x},
-                    [this.yIdx()]: {$set: newValue.y}
-                }
+                mu: muHash
             });
         }
         
@@ -32884,9 +32899,9 @@ var Distribution = React.createClass({
     rightPixel: function (){
         // Sum (x - mu)^2 / sig^2 for non-shown axies
         var acc = 0.0;
-        for (var i=0; i < this.props.hiddenValues.length; i++){
+        for (var i=0; i < this.props.axies.length; i++){
             if (this.props.shownAxies.indexOf(i) < 0){
-                acc += Math.pow(this.props.hiddenValues[i] - this.props.mu[i], 2) / this.props.sig.eig[i];
+                acc += Math.pow(this.props.axies[i].value - this.props.mu[i], 2) / this.props.sig.eig[i];
             }
         }
         var a = -2 * Math.log(this.props.threshold) - acc;
@@ -32938,7 +32953,7 @@ var Axis = React.createClass({
     },
     onChangeX: function (e){
         this.props.onChange({
-            x: e.target.value,
+            x: true,
             y: this.props.y,
             v: this.props.value
         });
@@ -32946,7 +32961,7 @@ var Axis = React.createClass({
     onChangeY: function (e){
         this.props.onChange({
             x: this.props.x,
-            y: e.target.value,
+            y: true,
             v: this.props.value
         });
     },
@@ -32954,8 +32969,14 @@ var Axis = React.createClass({
         return (
             React.createElement("div", {className: "axis"}, 
                 React.createElement("div", {className: "axis-boxes"}, 
-                    React.createElement("input", {type: "checkbox", checked: this.props.x, onChange: this.onChangeX}), 
-                    React.createElement("input", {type: "checkbox", checked: this.props.y, onChange: this.onChangeY})
+                    React.createElement("div", {className: "roundedOne"}, 
+                        React.createElement("input", {className: "roundedOne", type: "checkbox", checked: this.props.x, onChange: this.onChangeX}), 
+                        React.createElement("label", {className: "roundedOne", onClick: this.onChangeX})
+                    ), 
+                    React.createElement("div", {className: "roundedOne"}, 
+                        React.createElement("input", {className: "roundedOne", type: "checkbox", checked: this.props.y, onChange: this.onChangeY}), 
+                        React.createElement("label", {className: "roundedOne", onClick: this.onChangeY})
+                    )
                 ), 
                 React.createElement("div", {className: "axis-slider"}, 
                     React.createElement("span", null, this.props.name, " "), 
@@ -32984,15 +33005,15 @@ var GraphAxies = React.createClass({
                 React.createElement(Axis, {key: i, name: this.props.axies[i].name, 
                              min: this.props.axies[i].min, 
                              max: this.props.axies[i].max, 
+                             value: this.props.axies[i].value, 
                              x: i === this.props.shownAxies[0], 
                              y: i === this.props.shownAxies[1], 
-                             value: this.props.hiddenValues[i], 
                              onChange: this.onChangeGen(i)})
             );
         }
         return (
             React.createElement("div", null, 
-                React.createElement("div", {className: "axies-header"}, "x y"), 
+                React.createElement("div", {className: "axies-header"}, React.createElement("span", null, "x"), React.createElement("span", null, "y")), 
                 axies
             )
         );
@@ -33104,9 +33125,8 @@ var GraphGraphics = React.createClass({
                     pixelToValue: this.pixelToValue, 
                     axies: this.props.axies, 
                     shownAxies: this.props.shownAxies, 
-                    hiddenValues: this.props.hiddenValues, 
                     threshold: this.props.threshold, 
-                    enabled: this.props.tracksEnabled[i], 
+                    enabled: track.enabled, 
                     selected: i === this.props.trackSelected, 
                     modifyTrack: function (e) {this.props.modifyTrack(i, e);}.bind(this), 
                     onClick: function () {this.props.selectTrack(i);}.bind(this)})
@@ -33114,7 +33134,11 @@ var GraphGraphics = React.createClass({
         }.bind(this));
     },
     render: function (){
-       return (
+        var xP1 = this.valueToPixel({x: this.xAxis().value, y: this.yAxis().min});
+        var xP2 = this.valueToPixel({x: this.xAxis().value, y: this.yAxis().max});
+        var yP1 = this.valueToPixel({x: this.xAxis().min, y: this.yAxis().value});
+        var yP2 = this.valueToPixel({x: this.xAxis().max, y: this.yAxis().value});
+        return (
             React.createElement("svg", {width: this.props.width, height: this.props.height}, 
                 React.createElement("g", {style: {cursor:"grab"}}, 
                     React.createElement("rect", {width: this.props.width, height: this.props.height, style: {fill:this.props.backgroundcolor}, 
@@ -33124,6 +33148,8 @@ var GraphGraphics = React.createClass({
                             }
                         }.bind(this)
                     }), 
+                    React.createElement("line", {style: {stroke:'red', strokeWidth:5}, x1: xP1.px, x2: xP2.px, y1: xP1.py, y2: xP2.py}), 
+                    React.createElement("line", {style: {stroke:'red', strokeWidth:5}, x1: yP1.px, x2: yP2.px, y1: yP1.py, y2: yP2.py}), 
                     React.createElement(GraphLines, {valueToPixel: this.valueToPixel, 
                                 xAxis: this.xAxis(), yAxis: this.yAxis(), 
                                 color: this.props.color}), 
@@ -33201,7 +33227,7 @@ var GraphLegend = React.createClass({
     render: function (){
         var labels = [];
         for (var i=0; i < this.props.tracks.length; i++){
-            var opacity = this.props.tracksEnabled[i] ? 1.0 : 0.2;
+            var opacity = this.props.tracks[i].enabled ? 1.0 : 0.2;
             labels.push((
                 React.createElement("li", {key: i, style: {
                         cursor: 'pointer',
@@ -33303,7 +33329,7 @@ var GraphMenuCategory = React.createClass({
         var className = this.state.open ? '' : 'hidden';
         var symbol = this.state.open ? '▾' : '▸';
         return (
-            React.createElement("div", {clasName: "graph-menu-category"}, 
+            React.createElement("div", {className: "graph-menu-category"}, 
                 React.createElement("span", {onClick: this.handleClick, className: "graph-menu-category-title"}, symbol, " ", this.props.title, " "), 
                 React.createElement("div", React.__spread({className: className},  this.props), 
                     this.props.children
@@ -33348,14 +33374,14 @@ var GraphParams = React.createClass({
         }
     },
     onChangeMu: function(i, e){
-        var v = Math.pow(e.currentTarget.valueAsNumber, 2);
+        var v = e.currentTarget.valueAsNumber;
         if (v === undefined || isNaN(v)){
             v = 0.0;
         }
+        var hash = {};
+        hash[i] = {$set: Math.round(v*1000)/1000};
         this.props.modifyTrack(this.props.trackSelected, {
-            mu: {
-                [i]: {$set: v}
-            }
+            mu: hash
         });
     },
     onChangeSig: function(i, e){
@@ -33363,11 +33389,11 @@ var GraphParams = React.createClass({
         if (v === undefined || isNaN(v)){
             v = 0.0;
         }
+        var hash = {}
+        hash[i] = {$set: Math.round(v*1000)/1000};
         this.props.modifyTrack(this.props.trackSelected, {
             sig: { 
-                eig: {
-                    [i]: {$set: v} 
-                }
+                eig: hash
             }
         });
     },
@@ -33418,7 +33444,6 @@ var Graph = React.createClass({
     getInitialState(){
         return {
             shownAxies: [0, 1],
-            hiddenValues: [],
             threshold: 0.7
         }
     },
@@ -33428,6 +33453,8 @@ var Graph = React.createClass({
             height: 700,
             axies: []
         };
+    },
+    componentWillReceiveProps(nextProps) {
     },
     getLegend: function (){
         return this.props.tracks.map(function (child, i){
@@ -33440,17 +33467,15 @@ var Graph = React.createClass({
     },
     setAxisValues: function (i, e){
         var shownAxies = this.state.shownAxies;
-        var hiddenValues = this.state.hiddenValues;
         if (e.x){
             shownAxies[0] = i;
         }
         if (e.y){
             shownAxies[1] = i;
         }
-        hiddenValues[i] = e.v;
+        this.props.setAxisValue(i, e.v);
         this.setState({
             shownAxies: shownAxies,
-            hiddenValues: hiddenValues
         });
     },
     setThreshold: function (v){
@@ -33463,12 +33488,10 @@ var Graph = React.createClass({
                     React.createElement(GraphMenuCategory, {title: "Axies", defaultOpen: true}, 
                         React.createElement(GraphAxies, {axies: this.props.axies, 
                                     shownAxies: this.state.shownAxies, 
-                                    hiddenValues: this.state.hiddenValues, 
                                     setAxisValues: this.setAxisValues})
                     ), 
                     React.createElement(GraphMenuCategory, {title: "Legend", defaultOpen: true}, 
-                        React.createElement(GraphLegend, {tracksEnabled: this.props.tracksEnabled, 
-                                     trackSelected: this.props.trackSelected, 
+                        React.createElement(GraphLegend, {trackSelected: this.props.trackSelected, 
                                      tracks: this.props.tracks, 
                                      toggleTrack: this.props.toggleTrack, 
                                      selectTrack: this.props.selectTrack})
@@ -33489,11 +33512,9 @@ var Graph = React.createClass({
                                num_vlines: 10, 
                                num_hlines: 10, 
                                shownAxies: this.state.shownAxies, 
-                               tracksEnabled: this.props.tracksEnabled, 
                                trackSelected: this.props.trackSelected, 
                                selectTrack: this.props.selectTrack, 
                                modifyTrack: this.props.modifyTrack, 
-                               hiddenValues: this.state.hiddenValues, 
                                threshold: this.state.threshold}
                 )
             )
@@ -33551,7 +33572,8 @@ var genColorFromName = function (name){
 
 var parseDistribution = function (txt){
     var name = txt.split("::")[0];
-    var dists = txt.split("::")[1].split(";");
+    var enabled = txt.split("::")[1];
+    var dists = txt.split("::")[2].split(";");
     var mu = [];
     var sig = {vec:[], eig:[]};
     for (var i=0; i < dists.length; i++){
@@ -33568,12 +33590,14 @@ var parseDistribution = function (txt){
         mu: mu,
         sig: sig,
         name: name,
+        enabled: enabled,
         color: genColorFromName(name)
     };
 };
 
 var formatDistribution = function(track){
     var str = track.name + "::";
+    str += track.enabled + "::";
     for (var i=0; i < track.mu.length; i++){
         str += track.mu[i] + ':' + Math.sqrt(track.sig.eig[i]) + ';';
     }
@@ -33581,7 +33605,7 @@ var formatDistribution = function(track){
 };
 
 var formatAxis = function (axis){
-    return axis.name + "::" + axis.min + "::" + axis.max;
+    return axis.name + "::" + axis.min + "::" + axis.max + "::" + axis.value;
 }
 
 var parseAxis = function (txt){
@@ -33589,7 +33613,8 @@ var parseAxis = function (txt){
     return {
         name: parts[0],
         min: parseFloat(parts[1]),
-        max: parseFloat(parts[2])
+        max: parseFloat(parts[2]),
+        value: parseFloat(parts[3])
     } 
 };
 

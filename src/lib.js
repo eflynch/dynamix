@@ -45,7 +45,8 @@ var genColorFromName = function (name){
 
 var parseDistribution = function (txt){
     var name = txt.split("::")[0];
-    var dists = txt.split("::")[1].split(";");
+    var enabled = txt.split("::")[1];
+    var dists = txt.split("::")[2].split(";");
     var mu = [];
     var sig = {vec:[], eig:[]};
     for (var i=0; i < dists.length; i++){
@@ -62,12 +63,14 @@ var parseDistribution = function (txt){
         mu: mu,
         sig: sig,
         name: name,
+        enabled: enabled,
         color: genColorFromName(name)
     };
 };
 
 var formatDistribution = function(track){
     var str = track.name + "::";
+    str += track.enabled + "::";
     for (var i=0; i < track.mu.length; i++){
         str += track.mu[i] + ':' + Math.sqrt(track.sig.eig[i]) + ';';
     }
@@ -75,7 +78,7 @@ var formatDistribution = function(track){
 };
 
 var formatAxis = function (axis){
-    return axis.name + "::" + axis.min + "::" + axis.max;
+    return axis.name + "::" + axis.min + "::" + axis.max + "::" + axis.value;
 }
 
 var parseAxis = function (txt){
@@ -83,7 +86,8 @@ var parseAxis = function (txt){
     return {
         name: parts[0],
         min: parseFloat(parts[1]),
-        max: parseFloat(parts[2])
+        max: parseFloat(parts[2]),
+        value: parseFloat(parts[3])
     } 
 };
 

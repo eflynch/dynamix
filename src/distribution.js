@@ -16,27 +16,25 @@ var Distribution = React.createClass({
     },
     _onDragMove: function (e, deltaPos){
         if (!this.props.selected){return;}
-        
+
         if (this.state.metaKey){
             var newValue = this.props.pixelToValue({px: this.state.dragCP.px + deltaPos.x, py: this.state.dragCP.py + deltaPos.y});
             var oldValue = this.props.pixelToValue({px: this.state.dragCP.px, py: this.state.dragCP.py});
             var sx = Math.max(this.state.dragSig.eig[this.xIdx()] + deltaPos.x / (0.001 + Math.abs(deltaPos.x)) * Math.pow(newValue.x - oldValue.x, 2), 0.001);
             var sy = Math.max(this.state.dragSig.eig[this.yIdx()] + deltaPos.y / (0.001 + Math.abs(deltaPos.y)) * Math.pow(newValue.y - oldValue.y, 2), 0.001);
+            var sigHash = {};
+            sigHash[this.xIdx()] = {$set: Math.round(sx*1000)/1000};
+            sigHash[this.yIdx()] = {$set: Math.round(sy*1000)/1000};
             this.props.modifyTrack({
-                sig: {
-                    eig: {
-                        [this.xIdx()]: {$set: sx},
-                        [this.yIdx()]: {$set: sy}
-                    }
-                }
+                sig: {eig: sigHash}
             });
         } else {
             var newValue = this.props.pixelToValue({px: this.state.dragCP.px + deltaPos.x, py: this.state.dragCP.py + deltaPos.y});
+            var muHash = {};
+            muHash[this.xIdx()] = {$set: Math.round(newValue.x*1000)/1000};
+            muHash[this.yIdx()] = {$set: Math.round(newValue.y*1000)/1000};
             this.props.modifyTrack({
-                mu: {
-                    [this.xIdx()]: {$set: newValue.x},
-                    [this.yIdx()]: {$set: newValue.y}
-                }
+                mu: muHash
             });
         }
         
@@ -103,9 +101,9 @@ var Distribution = React.createClass({
     rightPixel: function (){
         // Sum (x - mu)^2 / sig^2 for non-shown axies
         var acc = 0.0;
-        for (var i=0; i < this.props.hiddenValues.length; i++){
+        for (var i=0; i < this.props.axies.length; i++){
             if (this.props.shownAxies.indexOf(i) < 0){
-                acc += Math.pow(this.props.hiddenValues[i] - this.props.mu[i], 2) / this.props.sig.eig[i];
+                acc += Math.pow(this.props.axies[i].value - this.props.mu[i], 2) / this.props.sig.eig[i];
             }
         }
         var a = -2 * Math.log(this.props.threshold) - acc;

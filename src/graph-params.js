@@ -14,14 +14,14 @@ var GraphParams = React.createClass({
         }
     },
     onChangeMu: function(i, e){
-        var v = Math.pow(e.currentTarget.valueAsNumber, 2);
+        var v = e.currentTarget.valueAsNumber;
         if (v === undefined || isNaN(v)){
             v = 0.0;
         }
+        var hash = {};
+        hash[i] = {$set: Math.round(v*1000)/1000};
         this.props.modifyTrack(this.props.trackSelected, {
-            mu: {
-                [i]: {$set: v}
-            }
+            mu: hash
         });
     },
     onChangeSig: function(i, e){
@@ -29,11 +29,11 @@ var GraphParams = React.createClass({
         if (v === undefined || isNaN(v)){
             v = 0.0;
         }
+        var hash = {}
+        hash[i] = {$set: Math.round(v*1000)/1000};
         this.props.modifyTrack(this.props.trackSelected, {
             sig: { 
-                eig: {
-                    [i]: {$set: v} 
-                }
+                eig: hash
             }
         });
     },

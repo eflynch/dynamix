@@ -14,7 +14,6 @@ var Graph = React.createClass({
     getInitialState(){
         return {
             shownAxies: [0, 1],
-            hiddenValues: [],
             threshold: 0.7
         }
     },
@@ -24,6 +23,8 @@ var Graph = React.createClass({
             height: 700,
             axies: []
         };
+    },
+    componentWillReceiveProps(nextProps) {
     },
     getLegend: function (){
         return this.props.tracks.map(function (child, i){
@@ -36,17 +37,15 @@ var Graph = React.createClass({
     },
     setAxisValues: function (i, e){
         var shownAxies = this.state.shownAxies;
-        var hiddenValues = this.state.hiddenValues;
         if (e.x){
             shownAxies[0] = i;
         }
         if (e.y){
             shownAxies[1] = i;
         }
-        hiddenValues[i] = e.v;
+        this.props.setAxisValue(i, e.v);
         this.setState({
             shownAxies: shownAxies,
-            hiddenValues: hiddenValues
         });
     },
     setThreshold: function (v){
@@ -59,12 +58,10 @@ var Graph = React.createClass({
                     <GraphMenuCategory title="Axies" defaultOpen={true}>
                         <GraphAxies axies={this.props.axies}
                                     shownAxies={this.state.shownAxies}
-                                    hiddenValues={this.state.hiddenValues}
                                     setAxisValues={this.setAxisValues}/>
                     </GraphMenuCategory>
                     <GraphMenuCategory title="Legend" defaultOpen={true}>
-                        <GraphLegend tracksEnabled={this.props.tracksEnabled} 
-                                     trackSelected={this.props.trackSelected}
+                        <GraphLegend trackSelected={this.props.trackSelected}
                                      tracks={this.props.tracks}
                                      toggleTrack={this.props.toggleTrack}
                                      selectTrack={this.props.selectTrack}/>
@@ -85,11 +82,9 @@ var Graph = React.createClass({
                                num_vlines={10}
                                num_hlines={10}
                                shownAxies={this.state.shownAxies}
-                               tracksEnabled={this.props.tracksEnabled}
                                trackSelected={this.props.trackSelected}
                                selectTrack={this.props.selectTrack}
                                modifyTrack={this.props.modifyTrack}
-                               hiddenValues={this.state.hiddenValues}
                                threshold={this.state.threshold}>
                 </GraphGraphics>
             </div>

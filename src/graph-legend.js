@@ -15,7 +15,7 @@ var GraphLegend = React.createClass({
     render: function (){
         var labels = [];
         for (var i=0; i < this.props.tracks.length; i++){
-            var opacity = this.props.tracksEnabled[i] ? 1.0 : 0.2;
+            var opacity = this.props.tracks[i].enabled ? 1.0 : 0.2;
             labels.push((
                 <li key={i} style={{
                         cursor: 'pointer',

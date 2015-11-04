@@ -30,7 +30,7 @@ var App = React.createClass({
     displayName: "App",
     getInitialState() {
         return {
-            axies: [{name:"x", min:0, max:1}, {name:"y", min:0, max:1}],
+            axies: [{name:"x", min:0, max:1, value:0.5}, {name:"y", min:0, max:1, value:0.5}],
             filename: undefined,
             tracks: [],
             trackSelected: undefined,
@@ -59,6 +59,11 @@ var App = React.createClass({
     componentWillUnmount() {
         window.removeEventListener('resize', this.handleRezie);
     }, 
+    componentDidUpdate(prevProps, prevState) {
+        if (this.state.tracks !== prevState.tracks || this.state.axies !== prevState.axies){
+            this.writeToFile();
+        }  
+    },
     loadFromFile: function (filename){
         $.get('data/' + filename, function (data){
             var tracks = [];
@@ -78,12 +83,13 @@ var App = React.createClass({
             this.setState({
                 filename: filename,
                 tracks: tracks,
-                tracksEnabled: tracks.map(function (){return false;}),
                 axies: axies
             });
         }.bind(this));
     },
     writeToFile: function (){
+        var filename = "/Users/eflynch/things/tidmarsh_pieces/bogrock/data/files.txt";
+        if (fs === null){return;}
         var str = "";
         for (var i=0; i < this.state.axies.length; i++){
             str += 'AXIS:::' + formatAxis(this.state.axies[i]) + '\n';
@@ -91,19 +97,30 @@ var App = React.createClass({
         for (var i=0; i < this.state.tracks.length; i++){
             str += 'TRACK:::' + formatDistribution(this.state.tracks[i]) + '\n';
         }
-        console.log(str);
+        fs.writeFile(filename, str); 
     },
     toggleTrack: function (i){
+        var hash = {};
+        hash[i] = {enabled: {$set: !this.state.tracks[i].enabled}};
         this.setState({
-            tracksEnabled: update(this.state.tracksEnabled, {[i]: {$set: !this.state.tracksEnabled[i]}})
+            tracks: update(this.state.tracks, hash)
         });
     },
     selectTrack: function (i){
         this.setState({trackSelected: i});
     },
-    modifyTrack: function (i, e){
+    setAxisValue: function (i, v){
+        var hash = {};
+        hash[i] = {value: {$set: v}};
         this.setState({
-            tracks: update(this.state.tracks, {[i]: e})
+            axies: update(this.state.axies, hash)
+        })
+    },
+    modifyTrack: function (i, e){
+        var hash = {};
+        hash[i] = e;
+        this.setState({
+            tracks: update(this.state.tracks, hash)
         });
     },
     render: function (){
@@ -116,10 +133,10 @@ var App = React.createClass({
                        height={Math.max(800, this.state.windowHeight)}
                        headerHeight={this.props.headerHeight}
                        menuWidth={this.props.menuWidth}
-                       tracksEnabled={this.state.tracksEnabled}
                        trackSelected={this.state.trackSelected}
                        selectTrack={this.selectTrack}
                        modifyTrack={this.modifyTrack}
+                       setAxisValue={this.setAxisValue}
                        toggleTrack={this.toggleTrack}>
                 </Graph>
             </div>

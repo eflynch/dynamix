@@ -19,7 +19,7 @@ var GraphMenuCategory = React.createClass({
         var className = this.state.open ? '' : 'hidden';
         var symbol = this.state.open ? '▾' : '▸';
         return (
-            <div clasName='graph-menu-category'>
+            <div className='graph-menu-category'>
                 <span onClick={this.handleClick} className="graph-menu-category-title">{symbol} {this.props.title} </span>
                 <div className={className} {...this.props}>
                     {this.props.children}

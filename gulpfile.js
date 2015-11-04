@@ -7,7 +7,7 @@ var notify       = require('gulp-notify');
 var source       = require('vinyl-source-stream');
 
 var scriptsDir = './src';
-var buildDir = './www/scripts';
+var buildDir = './app/scripts';
 var entries = [
   {
     'entry': 'main.js',
