@@ -11,6 +11,8 @@
     <div id="content">
     </div>
     <script>
-        var fs = require('fs');
+        if (window.hasOwnProperty('require')){
+            var fs = require('fs');
+        }
     </script>
 </body>

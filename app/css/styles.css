@@ -234,3 +234,29 @@ label {
     filter: alpha(opacity=100);
     opacity: 1;
 }
+
+.playbutton {
+    size: 16px;
+    margin-left: 10px;
+    height: 20px;
+}
+
+.table {
+    padding: 30px;
+    padding-top: 10px;
+    box-sizing: border-box;
+    z-index: 1000;
+    position: fixed;
+    bottom: 0px;
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    color: white;
+}
+
+.table thead {
+}
+
+.table tbody {
+}

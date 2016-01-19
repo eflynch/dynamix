@@ -1,6 +1,7 @@
 var browserify   = require('browserify');
 var watchify     = require('watchify');
 var reactify     = require('reactify');
+var strictify    = require('strictify');
 var gulp         = require('gulp');
 var gutil        = require('gulp-util');
 var notify       = require('gulp-notify');
@@ -18,6 +19,7 @@ var entries = [
 var buildScript = function(entryPoint, exitPoint) {
   var bundler = watchify(browserify(scriptsDir + '/' + entryPoint, watchify.args));
   bundler.transform(reactify);
+  bundler.transform(strictify);
 
   bundler.on('update', rebundle);
 

@@ -130,7 +130,8 @@ var Distribution = React.createClass({
                 <ellipse cx={cp.px} cy={cp.py}
                          rx={rx} ry={ry} 
                          style={{fill:this.props.color, opacity: this.props.selected ? 1.0 : 0.3}}/>
-                <text x={cp.px} y={cp.py} fill="white" textAnchor="middle"
+                <ellipse cx={cp.px} cy={cp.py} rx={6} ry={6} style={{fill:'white'}}/>
+                <text x={cp.px} y={cp.py - 14} fill="white" textAnchor="middle"
                       alignmentBaseline="central" className="unselectable">{this.props.name}</text>
             </g>
         );

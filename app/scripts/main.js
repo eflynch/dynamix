@@ -32646,6 +32646,7 @@ module.exports = warning;
 module.exports = require('./lib/React');
 
 },{"./lib/React":71}],205:[function(require,module,exports){
+"use strict";
 var React = require('react');
 var update = require('react-addons-update');
 var $ = require('jquery');
@@ -32737,7 +32738,7 @@ var App = React.createClass({
     },
     writeToFile: function (){
         var filename = "/Users/eflynch/things/tidmarsh_pieces/bogrock/data/files.txt";
-        if (fs === null){return;}
+        if (fs === null || fs === undefined){return;}
         var str = "";
         for (var i=0; i < this.state.axies.length; i++){
             str += 'AXIS:::' + formatAxis(this.state.axies[i]) + '\n';
@@ -32796,6 +32797,7 @@ var App = React.createClass({
 module.exports = App;
 
 },{"./graph":215,"./lib":216,"jquery":2,"react":204,"react-addons-update":45}],206:[function(require,module,exports){
+"use strict";
 var React = require('react');
 var ClickDrag = require('react-clickdrag-mixin');
 
@@ -32928,7 +32930,8 @@ var Distribution = React.createClass({
                 React.createElement("ellipse", {cx: cp.px, cy: cp.py, 
                          rx: rx, ry: ry, 
                          style: {fill:this.props.color, opacity: this.props.selected ? 1.0 : 0.3}}), 
-                React.createElement("text", {x: cp.px, y: cp.py, fill: "white", textAnchor: "middle", 
+                React.createElement("ellipse", {cx: cp.px, cy: cp.py, rx: 6, ry: 6, style: {fill:'white'}}), 
+                React.createElement("text", {x: cp.px, y: cp.py - 14, fill: "white", textAnchor: "middle", 
                       alignmentBaseline: "central", className: "unselectable"}, this.props.name)
             )
         );
@@ -32938,6 +32941,7 @@ var Distribution = React.createClass({
 module.exports = Distribution;
 
 },{"react":204,"react-clickdrag-mixin":46}],207:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var Slider = require('rc-slider');
@@ -33023,6 +33027,7 @@ var GraphAxies = React.createClass({
 module.exports = GraphAxies;
 
 },{"rc-slider":8,"react":204}],208:[function(require,module,exports){
+"use strict";
 var React = require('react');
 var ClickDrag = require('react-clickdrag-mixin');
 
@@ -33166,6 +33171,7 @@ var GraphGraphics = React.createClass({
 module.exports = GraphGraphics;
 
 },{"./distribution":206,"./graph-labels":209,"./graph-lines":211,"react":204,"react-clickdrag-mixin":46}],209:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var GraphLabels = React.createClass({
@@ -33210,6 +33216,7 @@ var GraphLabels = React.createClass({
 module.exports = GraphLabels;
 
 },{"react":204}],210:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var GraphLegend = React.createClass({
@@ -33250,6 +33257,7 @@ var GraphLegend = React.createClass({
 module.exports = GraphLegend;
 
 },{"react":204}],211:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var GraphLines = React.createClass({
@@ -33308,6 +33316,7 @@ var GraphLines = React.createClass({
 module.exports = GraphLines;
 
 },{"react":204}],212:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var GraphMenuCategory = React.createClass({
@@ -33342,6 +33351,7 @@ var GraphMenuCategory = React.createClass({
 module.exports = GraphMenuCategory;
 
 },{"react":204}],213:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var GraphMenu = React.createClass({
@@ -33358,6 +33368,7 @@ var GraphMenu = React.createClass({
 module.exports = GraphMenu;
 
 },{"react":204}],214:[function(require,module,exports){
+"use strict";
 var React = require('react');
 
 var Slider = require('rc-slider');
@@ -33428,6 +33439,7 @@ var GraphParams = React.createClass({
 module.exports = GraphParams;
 
 },{"rc-slider":8,"react":204}],215:[function(require,module,exports){
+"use strict";
 var React = require('react');
 var ClickDrag = require('react-clickdrag-mixin');
 
@@ -33438,13 +33450,17 @@ var GraphLegend = require('./graph-legend');
 var GraphParams = require('./graph-params');
 var GraphAxies = require('./graph-axies');
 var GraphGraphics = require('./graph-graphics');
+var PlayButton = require('./play-button');
+
+var Table = require('./table');
 
 var Graph = React.createClass({
     displayName: 'Graph',
     getInitialState(){
         return {
             shownAxies: [0, 1],
-            threshold: 0.7
+            threshold: 0.7,
+            showTable: false,
         }
     },
     getDefaultProps() {
@@ -33485,12 +33501,13 @@ var Graph = React.createClass({
         return (
             React.createElement("div", {className: "graph"}, 
                 React.createElement(GraphMenu, {headerHeight: this.props.headerHeight, width: this.props.menuWidth, height: this.props.height - this.props.headerHeight}, 
+                    React.createElement(PlayButton, {tracks: this.props.tracks, axies: this.props.axies, trackSelected: this.props.trackSelected}), 
                     React.createElement(GraphMenuCategory, {title: "Axies", defaultOpen: true}, 
                         React.createElement(GraphAxies, {axies: this.props.axies, 
                                     shownAxies: this.state.shownAxies, 
                                     setAxisValues: this.setAxisValues})
                     ), 
-                    React.createElement(GraphMenuCategory, {title: "Legend", defaultOpen: true}, 
+                    React.createElement(GraphMenuCategory, {title: "Tracks", defaultOpen: true}, 
                         React.createElement(GraphLegend, {trackSelected: this.props.trackSelected, 
                                      tracks: this.props.tracks, 
                                      toggleTrack: this.props.toggleTrack, 
@@ -33516,7 +33533,8 @@ var Graph = React.createClass({
                                selectTrack: this.props.selectTrack, 
                                modifyTrack: this.props.modifyTrack, 
                                threshold: this.state.threshold}
-                )
+                ), 
+                React.createElement(Table, {visible: this.state.showTable, tracks: this.props.tracks, axies: this.props.axies, modifyTrack: this.props.modifyTrack})
             )
         );
     }
@@ -33524,7 +33542,8 @@ var Graph = React.createClass({
 
 module.exports = Graph;
 
-},{"./graph-axies":207,"./graph-graphics":208,"./graph-legend":210,"./graph-menu":213,"./graph-menu-category":212,"./graph-params":214,"react":204,"react-clickdrag-mixin":46}],216:[function(require,module,exports){
+},{"./graph-axies":207,"./graph-graphics":208,"./graph-legend":210,"./graph-menu":213,"./graph-menu-category":212,"./graph-params":214,"./play-button":218,"./table":220,"react":204,"react-clickdrag-mixin":46}],216:[function(require,module,exports){
+"use strict";
 
 String.prototype.hashCode = function() {
   var hash = 0, i, chr, len;
@@ -33628,6 +33647,7 @@ module.exports = {
 
 },{}],217:[function(require,module,exports){
 "use strict";
+"use strict";
 
 var React = require('react');
 var ReactDOM = require('react-dom');
@@ -33640,4 +33660,278 @@ document.addEventListener("DOMContentLoaded", function (){
         React.createElement(App, {initFilename: "bogrock.txt"}), content);
 });
 
-},{"./app":205,"react":204,"react-dom":47}]},{},[217]);
+},{"./app":205,"react":204,"react-dom":47}],218:[function(require,module,exports){
+"use strict";
+var React = require('react');
+var update = require('react-addons-update');
+
+var Player = require('./player');
+
+var PlayButton = React.createClass({
+    displayName: 'PlayButton',
+    handleClick: function (){
+        this.setState({playing: !this.state.playing});
+    },
+    getInitialState() {
+        return {
+            playing: false  
+        };
+    },
+    getTracks: function (){
+        var tracks = [];
+        for (var i=0; i < this.props.tracks.length; i++){
+            var track = this.props.tracks[i];
+            var gain = 1.0;
+            for (var j=0; j < this.props.axies.length; j++){
+                var axis = this.props.axies[j];
+                var x = axis.value;
+                var m = track.mu[j];
+                var sig = Math.sqrt(track.sig.eig[j]);
+                var exp = Math.exp(-1.0 * (x-m) * (x-m) / (2 * sig * sig));
+                gain *= exp;
+            }
+            tracks.push({
+                name: track.name,
+                gain: track.enabled ? gain : 0.0
+            });
+        }
+        return tracks;
+    },
+    render: function (){
+        return (
+            React.createElement("div", {className: "playbutton"}, 
+                React.createElement("span", {style: {cursor:'pointer'}, onClick: this.handleClick}, this.state.playing ? "◼︎": "►"), 
+                React.createElement(Player, {tracks: this.getTracks(), playing: this.state.playing, trackSelected: this.props.trackSelected})
+            )
+        );
+    }
+});
+
+module.exports = PlayButton;
+
+},{"./player":219,"react":204,"react-addons-update":45}],219:[function(require,module,exports){
+"use strict";
+var React = require('react');
+var update = require('react-addons-update');
+
+var BufferWrapper = class BufferWrapper{
+    constructor(name, buffer, gain){
+        this.name = name;
+        this.buffer = buffer;
+        this.gain = gain;
+        this.srcNode = false;
+        this.gainNode = false;
+    }
+
+    start(ctx){
+        var srcNode = ctx.createBufferSource();
+        var gainNode = ctx.createGain();
+        srcNode.buffer = this.buffer;
+        srcNode.loop = true;
+        srcNode.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        gainNode.gain.value = this.gain;
+        srcNode.start();
+        this.srcNode = srcNode;
+        this.gainNode = gainNode;
+    }
+
+    stop(ctx){
+        if (this.srcNode){
+            this.srcNode.stop();
+            this.srcNode = false;
+            this.gainNode = false;
+        }
+    }
+
+    setGain(gain){
+        this.gain = gain;
+        if (this.gainNode){
+            this.gainNode.gain.value = gain;
+        }
+    }
+}
+
+
+var Player = React.createClass({
+    displayName: 'Player',
+    getInitialState: function (){
+        return {
+            ctx: false,
+            loadedTracks: [],
+            failedTracks: [],
+            numLoaded: 0
+        }
+    },
+    getDefaultProps() {
+        return {
+            playing: false,
+            prefix: 'assets/',
+            suffix: '.mp3',
+            tracks: []
+        };
+    },
+    componentWillMount() {
+        var ctx;
+        ctx = new AudioContext();
+        this.setState({ctx: ctx});
+    },
+    initBuffer: function (track){
+        var req = new XMLHttpRequest();
+        req.open("GET", this.props.prefix+track.name+this.props.suffix, true);
+        req.responseType = "arraybuffer";
+        var that = this;
+        req.onload = function (e){
+            if (this.status == 200){
+                that.state.ctx.decodeAudioData(req.response, function(buffer) {
+                    this.state.loadedTracks.push(new BufferWrapper(track.name, buffer, track.gain))
+                    this.setState({numLoaded: this.state.loadedTracks.length});
+                }.bind(that));
+            } else {
+                that.state.failedTracks.push(track.name);
+            }
+            
+        }
+        req.send();
+    },
+    componentWillReceiveProps(nextProps) {
+        for (var j=0; j < nextProps.tracks.length; j++){
+            var track = nextProps.tracks[j];
+            var foundOne = false;
+            for (var i=0; i < this.state.loadedTracks.length; i++){
+                if (this.state.loadedTracks[i].name === track.name){
+                    foundOne = true;
+                    this.state.loadedTracks[i].setGain(track.gain);
+                }
+            }
+            for (var i=0; i < this.state.failedTracks.length; i++){
+                if (this.state.failedTracks[i] === track.name){
+                    foundOne = true;
+                }
+            }
+            if (!foundOne){
+                this.initBuffer(track);
+            }
+        }
+        if (!this.props.playing && nextProps.playing){
+            this.startPlaying();
+        }
+        if (this.props.playing && !nextProps.playing){
+            this.stopPlaying();
+        }
+    },
+    startPlaying: function(){
+        for (var i=0; i < this.state.loadedTracks.length; i++){
+            var track = this.state.loadedTracks[i];
+            track.start(this.state.ctx);
+        }
+    },
+    stopPlaying: function(){
+        for (var i=0; i < this.state.loadedTracks.length; i++){
+            var track = this.state.loadedTracks[i];
+            track.stop(this.state.ctx);
+        }
+    },
+    selectedGain: function(){
+        for (var i=0; i < this.state.loadedTracks.length; i++){
+            var track = this.state.loadedTracks[i];
+            if (this.props.tracks.length > this.props.trackSelected){
+                if (track.name === this.props.tracks[this.props.trackSelected].name){
+                    return track.gain;
+                }
+            }
+        }
+        return "none";
+    },
+    render: function (){
+        return React.createElement("span", null, " (", this.state.numLoaded, " / ", this.props.tracks.length, ") : ", this.selectedGain(), " ");
+    }
+});
+
+module.exports = Player;
+
+},{"react":204,"react-addons-update":45}],220:[function(require,module,exports){
+"use strict";
+var React = require('react');
+
+var Table = React.createClass({
+    displayName: 'Table',
+    getForm: function (){
+        var inputs = [];
+        for (var i=0; i < this.props.axies.length; i++){
+
+        }
+    },
+    onChangeMu: function(trackIdx, axisIdx, e){
+        var v = e.currentTarget.valueAsNumber;
+        if (v === undefined || isNaN(v)){
+            v = 0.0;
+        }
+        var hash = {};
+        hash[axisIdx] = {$set: Math.round(v*1000)/1000};
+        this.props.modifyTrack(trackIdx, {
+            mu: hash
+        });
+    },
+    onChangeSig: function(trackIdx, axisIdx, e){
+        var v = Math.pow(e.currentTarget.valueAsNumber, 2);
+        if (v === undefined || isNaN(v)){
+            v = 0.0;
+        }
+        var hash = {}
+        hash[axisIdx] = {$set: Math.round(v*1000)/1000};
+        this.props.modifyTrack(trackIdx, {
+            sig: { 
+                eig: hash
+            }
+        });
+    },
+    render: function (){
+        var headers = this.props.axies.map(function (axis, i){
+            return [React.createElement("th", null, axis.name, " mean"), React.createElement("th", null, axis.name, " std")];
+        }.bind(this));
+
+        var rows = this.props.tracks.map(function (track, i){
+            var cells =  this.props.axies.map(function (axis, j){           
+                return [
+                    React.createElement("td", null, 
+                        React.createElement("input", {type: "number", 
+                               onChange: function (e){this.onChangeMu(i, j, e);}.bind(this), 
+                               value: track.mu[j]})
+                    ), 
+                    React.createElement("td", null, 
+                        React.createElement("input", {type: "number", 
+                               onChange: function (e){this.onChangeSig(i, j, e);}.bind(this), 
+                               value: Math.sqrt(track.sig.eig[j])})
+                    )
+                ];
+            }.bind(this));
+            return (
+                React.createElement("tr", {key: track.name}, 
+                    React.createElement("td", null, track.name), 
+                    cells
+                )
+            );
+        }.bind(this));
+
+        return (
+            React.createElement("div", {className: "table", style: {display: this.props.visible ? "block" : "none"}}, 
+            React.createElement("table", null, 
+                React.createElement("thead", null, 
+                    React.createElement("tr", null, 
+                        React.createElement("th", null, "Track"), 
+                        headers
+                    )
+                ), 
+                React.createElement("tbody", null, 
+                    rows
+                )
+            )
+            )
+        );
+    }
+});
+
+module.exports = Table;
+
+},{"react":204}]},{},[217]);

@@ -89,7 +89,7 @@ var App = React.createClass({
     },
     writeToFile: function (){
         var filename = "/Users/eflynch/things/tidmarsh_pieces/bogrock/data/files.txt";
-        if (fs === null){return;}
+        if (fs === null || fs === undefined){return;}
         var str = "";
         for (var i=0; i < this.state.axies.length; i++){
             str += 'AXIS:::' + formatAxis(this.state.axies[i]) + '\n';

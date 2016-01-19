@@ -1,3 +1,6 @@
+app/assets
+app/scripts
+
 ###Python###
 
 # Byte-compiled / optimized / DLL files
@@ -63,7 +66,8 @@ target/
 .LSOverride
 
 # Icon must end with two \r
-Icon
+Icon
+
 
 # Thumbnails
 ._*
