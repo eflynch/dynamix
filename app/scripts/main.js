@@ -32648,6 +32648,68 @@ module.exports = require('./lib/React');
 },{"./lib/React":71}],205:[function(require,module,exports){
 "use strict";
 var React = require('react');
+
+var About = React.createClass({
+    displayName: 'About',
+    getInitialState() {
+        return {
+            collapsed: true  
+        };
+    },
+    onClick: function (){
+        this.setState({collapsed: !this.state.collapsed});
+    },
+    render: function (){
+        return (
+            React.createElement("div", {className: this.state.collapsed ? "about-closed" : "about-open"}, 
+                React.createElement("span", {className: "table-button", onClick: this.onClick}, this.state.collapsed ? "?" : "x"), 
+                React.createElement("div", {style: {display: this.state.collapsed ? "none" : "block"}}, 
+                    React.createElement("div", {style: {width: 720, align:'center', margin:'auto'}}, 
+                        React.createElement("h1", null, "Dynamix: Reactive Mixing Specification Editor"), 
+                        React.createElement("p", null, 
+                            "Dynamix is a tool/thought experiment for mixing together a set of tracks" + ' ' + 
+                            "by performing a zeroth order spatialization in an abstract parameter space." + ' ' +
+                            "Presented here is a five-dimensional parameter space corresponding to five" + ' ' + 
+                            "metrics that are measured by sensor nodes in a wetland restoration project" + ' ' +
+                            "called ", React.createElement("a", {href: "http://tidmarsh.media.mit.edu"}, "Tidmarsh"), ". Eighteen" + ' ' + 
+                            "instrumental tracks I recorded are listed under \"Tracks.\" Each track is" + ' ' + 
+                            "associated with a region of the parameter space specified by a max-one" + ' ' + 
+                            "axis-aligned multivariate Gaussian distribution. A selected point in the" + ' ' + 
+                            "parameter space specifies a mix of the tracks each weighted by the evaluation" + ' ' + 
+                            "of the associated Gaussians at that point."
+                        ), 
+                        React.createElement("p", null, 
+                            "Select an X and a Y axis in the Axis and Cursor pane to visualize in the graph." + ' ' +
+                            "The sliders next to each axis move the \"cursor\" around the space changing the mix."
+                        ), 
+                        React.createElement("p", null, 
+                            "The graph visualizes each Gaussian distribution as an ellipse. The boundary of the" + ' ' + 
+                            "ellipse is an isocontour of the ellipse projected onto the shown axies at the" + ' ' + 
+                            "hyperplane specified by the cursor position of the non-shown axies. The value of the" + ' ' + 
+                            "isocontour is set by the \"Threshold\" parameter. The position of a selected track in" + ' ' + 
+                            "the parameter space may be adjusted graphically or with the parameters pane."
+                        ), 
+                        React.createElement("p", null, 
+                            "Enable and Disable tracks with the squares in the Tracks pane."
+                        ), 
+                        React.createElement("ul", null, 
+                            React.createElement("li", null, "Click and drag to move a Gaussian distribution around"), 
+                            React.createElement("li", null, "CMD-Click and drag to change Gaussian size"), 
+                            React.createElement("li", null, "Shift-Click and drag to move the Graph"), 
+                            React.createElement("li", null, "Opt-Click and drag to zoom the Graph")
+                        )
+                    )
+                )
+            )
+        );
+    }
+});
+
+module.exports = About;
+
+},{"react":204}],206:[function(require,module,exports){
+"use strict";
+var React = require('react');
 var update = require('react-addons-update');
 var $ = require('jquery');
 
@@ -32796,7 +32858,7 @@ var App = React.createClass({
 
 module.exports = App;
 
-},{"./graph":215,"./lib":216,"jquery":2,"react":204,"react-addons-update":45}],206:[function(require,module,exports){
+},{"./graph":216,"./lib":217,"jquery":2,"react":204,"react-addons-update":45}],207:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var ClickDrag = require('react-clickdrag-mixin');
@@ -32940,7 +33002,7 @@ var Distribution = React.createClass({
 
 module.exports = Distribution;
 
-},{"react":204,"react-clickdrag-mixin":46}],207:[function(require,module,exports){
+},{"react":204,"react-clickdrag-mixin":46}],208:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33026,7 +33088,7 @@ var GraphAxies = React.createClass({
 
 module.exports = GraphAxies;
 
-},{"rc-slider":8,"react":204}],208:[function(require,module,exports){
+},{"rc-slider":8,"react":204}],209:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var ClickDrag = require('react-clickdrag-mixin');
@@ -33170,7 +33232,7 @@ var GraphGraphics = React.createClass({
 
 module.exports = GraphGraphics;
 
-},{"./distribution":206,"./graph-labels":209,"./graph-lines":211,"react":204,"react-clickdrag-mixin":46}],209:[function(require,module,exports){
+},{"./distribution":207,"./graph-labels":210,"./graph-lines":212,"react":204,"react-clickdrag-mixin":46}],210:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33215,7 +33277,7 @@ var GraphLabels = React.createClass({
 
 module.exports = GraphLabels;
 
-},{"react":204}],210:[function(require,module,exports){
+},{"react":204}],211:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33256,7 +33318,7 @@ var GraphLegend = React.createClass({
 
 module.exports = GraphLegend;
 
-},{"react":204}],211:[function(require,module,exports){
+},{"react":204}],212:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33315,7 +33377,7 @@ var GraphLines = React.createClass({
 
 module.exports = GraphLines;
 
-},{"react":204}],212:[function(require,module,exports){
+},{"react":204}],213:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33350,7 +33412,7 @@ var GraphMenuCategory = React.createClass({
 
 module.exports = GraphMenuCategory;
 
-},{"react":204}],213:[function(require,module,exports){
+},{"react":204}],214:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33367,7 +33429,7 @@ var GraphMenu = React.createClass({
 
 module.exports = GraphMenu;
 
-},{"react":204}],214:[function(require,module,exports){
+},{"react":204}],215:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33438,7 +33500,7 @@ var GraphParams = React.createClass({
 
 module.exports = GraphParams;
 
-},{"rc-slider":8,"react":204}],215:[function(require,module,exports){
+},{"rc-slider":8,"react":204}],216:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var ClickDrag = require('react-clickdrag-mixin');
@@ -33453,6 +33515,7 @@ var GraphGraphics = require('./graph-graphics');
 var PlayButton = require('./play-button');
 
 var Table = require('./table');
+var About = require('./about');
 
 var Graph = React.createClass({
     displayName: 'Graph',
@@ -33460,7 +33523,6 @@ var Graph = React.createClass({
         return {
             shownAxies: [0, 1],
             threshold: 0.7,
-            showTable: false,
         }
     },
     getDefaultProps() {
@@ -33502,7 +33564,7 @@ var Graph = React.createClass({
             React.createElement("div", {className: "graph"}, 
                 React.createElement(GraphMenu, {headerHeight: this.props.headerHeight, width: this.props.menuWidth, height: this.props.height - this.props.headerHeight}, 
                     React.createElement(PlayButton, {tracks: this.props.tracks, axies: this.props.axies, trackSelected: this.props.trackSelected}), 
-                    React.createElement(GraphMenuCategory, {title: "Axies", defaultOpen: true}, 
+                    React.createElement(GraphMenuCategory, {title: "Axies and Cursor", defaultOpen: true}, 
                         React.createElement(GraphAxies, {axies: this.props.axies, 
                                     shownAxies: this.state.shownAxies, 
                                     setAxisValues: this.setAxisValues})
@@ -33534,7 +33596,8 @@ var Graph = React.createClass({
                                modifyTrack: this.props.modifyTrack, 
                                threshold: this.state.threshold}
                 ), 
-                React.createElement(Table, {visible: this.state.showTable, tracks: this.props.tracks, axies: this.props.axies, modifyTrack: this.props.modifyTrack})
+                React.createElement(Table, {tracks: this.props.tracks, axies: this.props.axies, modifyTrack: this.props.modifyTrack}), 
+                React.createElement(About, null)
             )
         );
     }
@@ -33542,7 +33605,7 @@ var Graph = React.createClass({
 
 module.exports = Graph;
 
-},{"./graph-axies":207,"./graph-graphics":208,"./graph-legend":210,"./graph-menu":213,"./graph-menu-category":212,"./graph-params":214,"./play-button":218,"./table":220,"react":204,"react-clickdrag-mixin":46}],216:[function(require,module,exports){
+},{"./about":205,"./graph-axies":208,"./graph-graphics":209,"./graph-legend":211,"./graph-menu":214,"./graph-menu-category":213,"./graph-params":215,"./play-button":219,"./table":221,"react":204,"react-clickdrag-mixin":46}],217:[function(require,module,exports){
 "use strict";
 
 String.prototype.hashCode = function() {
@@ -33645,7 +33708,7 @@ module.exports = {
     formatAxis: formatAxis
 };
 
-},{}],217:[function(require,module,exports){
+},{}],218:[function(require,module,exports){
 "use strict";
 "use strict";
 
@@ -33660,7 +33723,7 @@ document.addEventListener("DOMContentLoaded", function (){
         React.createElement(App, {initFilename: "bogrock.txt"}), content);
 });
 
-},{"./app":205,"react":204,"react-dom":47}],218:[function(require,module,exports){
+},{"./app":206,"react":204,"react-dom":47}],219:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var update = require('react-addons-update');
@@ -33709,7 +33772,7 @@ var PlayButton = React.createClass({
 
 module.exports = PlayButton;
 
-},{"./player":219,"react":204,"react-addons-update":45}],219:[function(require,module,exports){
+},{"./player":220,"react":204,"react-addons-update":45}],220:[function(require,module,exports){
 "use strict";
 var React = require('react');
 var update = require('react-addons-update');
@@ -33850,7 +33913,7 @@ var Player = React.createClass({
 
 module.exports = Player;
 
-},{"react":204,"react-addons-update":45}],220:[function(require,module,exports){
+},{"react":204,"react-addons-update":45}],221:[function(require,module,exports){
 "use strict";
 var React = require('react');
 
@@ -33945,4 +34008,4 @@ var Table = React.createClass({
 
 module.exports = Table;
 
-},{"react":204}]},{},[217]);
+},{"react":204}]},{},[218]);

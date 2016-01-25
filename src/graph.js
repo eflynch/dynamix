@@ -11,6 +11,7 @@ var GraphGraphics = require('./graph-graphics');
 var PlayButton = require('./play-button');
 
 var Table = require('./table');
+var About = require('./about');
 
 var Graph = React.createClass({
     displayName: 'Graph',
@@ -18,7 +19,6 @@ var Graph = React.createClass({
         return {
             shownAxies: [0, 1],
             threshold: 0.7,
-            showTable: false,
         }
     },
     getDefaultProps() {
@@ -60,7 +60,7 @@ var Graph = React.createClass({
             <div className="graph">
                 <GraphMenu headerHeight={this.props.headerHeight} width={this.props.menuWidth} height={this.props.height - this.props.headerHeight}>
                     <PlayButton tracks={this.props.tracks} axies={this.props.axies} trackSelected={this.props.trackSelected}/>
-                    <GraphMenuCategory title="Axies" defaultOpen={true}>
+                    <GraphMenuCategory title="Axies and Cursor" defaultOpen={true}>
                         <GraphAxies axies={this.props.axies}
                                     shownAxies={this.state.shownAxies}
                                     setAxisValues={this.setAxisValues}/>
@@ -92,7 +92,8 @@ var Graph = React.createClass({
                                modifyTrack={this.props.modifyTrack}
                                threshold={this.state.threshold}>
                 </GraphGraphics>
-                <Table visible={this.state.showTable} tracks={this.props.tracks} axies={this.props.axies} modifyTrack={this.props.modifyTrack}/>
+                <Table tracks={this.props.tracks} axies={this.props.axies} modifyTrack={this.props.modifyTrack}/>
+                <About/>
             </div>
         );
     }

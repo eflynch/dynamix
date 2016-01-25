@@ -4,6 +4,12 @@ body {
     color: white;
 }
 
+a {
+    text-decoration:none;
+    color:gray;
+    font-weight:900;
+}
+
 ul {
     margin: 0;
     padding: 0;
@@ -256,25 +262,50 @@ label {
 }
 
 .table-closed {
-    padding: 10px;
-    padding-right: 30px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     z-index: 1000;
     position: fixed;
     top: 0px;
-    right: 0px;
+    right: 30px;
+    color: white; 
+}
+
+.about-closed {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    z-index: 1000;
+    position: fixed;
+    top: 0px;
+    right: 60px;
     color: white; 
 }
 
 .table-open {
-    padding: 30px;
     padding-top: 10px;
+    padding-right: 30px;
+    padding-left: 30px;
     box-sizing: border-box;
-    z-index: 1000;
+    z-index: 2000;
     position: fixed;
     top: 0px;
     height: 100%;
     width: 100%;
     overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+    color: white;
+}
+
+.about-open {
+    padding-top: 10px;
+    padding-right: 30px;
+    padding-left: 30px;
+    box-sizing: border-box;
+    z-index: 2000;
+    position: fixed;
+    top: 0px;
+    height: 100%;
+    width: 100%;
     background-color: rgba(0,0,0,0.9);
     color: white;
 }
