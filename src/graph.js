@@ -18,7 +18,7 @@ var Graph = React.createClass({
     getInitialState(){
         return {
             shownAxies: [0, 1],
-            threshold: 0.7,
+            threshold: 0.5,
         }
     },
     getDefaultProps() {
