@@ -2,6 +2,11 @@ var React = require('react');
 
 var Table = React.createClass({
     displayName: 'Table',
+    getInitialState() {
+        return {
+            collapsed: true  
+        };
+    },
     getForm: function (){
         var inputs = [];
         for (var i=0; i < this.props.axies.length; i++){
@@ -32,6 +37,9 @@ var Table = React.createClass({
             }
         });
     },
+    onClick: function (){
+        this.setState({collapsed: !this.state.collapsed});
+    },
     render: function (){
         var headers = this.props.axies.map(function (axis, i){
             return [<th>{axis.name} mean</th>, <th>{axis.name} std</th>];
@@ -61,18 +69,21 @@ var Table = React.createClass({
         }.bind(this));
 
         return (
-            <div className="table" style={{display: this.props.visible ? "block" : "none"}}>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Track</th>
-                        {headers}
-                    </tr>
-                </thead>
-                <tbody>
-                    {rows}
-                </tbody>
-            </table>
+            <div className={this.state.collapsed ? "table-closed" : "table-open"}>
+                <span className="table-button" onClick={this.onClick}>{this.state.collapsed ? "o" : "x"}</span>
+                <div style={{display: this.state.collapsed ? "none" : "block"}}>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Track</th>
+                                {headers}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {rows}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         );
     }

@@ -33844,7 +33844,7 @@ var Player = React.createClass({
         return "none";
     },
     render: function (){
-        return React.createElement("span", null, " (", this.state.numLoaded, " / ", this.props.tracks.length, ") : ", this.selectedGain(), " ");
+        return React.createElement("span", null, " (", this.state.numLoaded, " / ", this.props.tracks.length, ")");
     }
 });
 
@@ -33856,6 +33856,11 @@ var React = require('react');
 
 var Table = React.createClass({
     displayName: 'Table',
+    getInitialState() {
+        return {
+            collapsed: true  
+        };
+    },
     getForm: function (){
         var inputs = [];
         for (var i=0; i < this.props.axies.length; i++){
@@ -33886,6 +33891,9 @@ var Table = React.createClass({
             }
         });
     },
+    onClick: function (){
+        this.setState({collapsed: !this.state.collapsed});
+    },
     render: function (){
         var headers = this.props.axies.map(function (axis, i){
             return [React.createElement("th", null, axis.name, " mean"), React.createElement("th", null, axis.name, " std")];
@@ -33915,18 +33923,21 @@ var Table = React.createClass({
         }.bind(this));
 
         return (
-            React.createElement("div", {className: "table", style: {display: this.props.visible ? "block" : "none"}}, 
-            React.createElement("table", null, 
-                React.createElement("thead", null, 
-                    React.createElement("tr", null, 
-                        React.createElement("th", null, "Track"), 
-                        headers
+            React.createElement("div", {className: this.state.collapsed ? "table-closed" : "table-open"}, 
+                React.createElement("span", {className: "table-button", onClick: this.onClick}, this.state.collapsed ? "o" : "x"), 
+                React.createElement("div", {style: {display: this.state.collapsed ? "none" : "block"}}, 
+                    React.createElement("table", null, 
+                        React.createElement("thead", null, 
+                            React.createElement("tr", null, 
+                                React.createElement("th", null, "Track"), 
+                                headers
+                            )
+                        ), 
+                        React.createElement("tbody", null, 
+                            rows
+                        )
                     )
-                ), 
-                React.createElement("tbody", null, 
-                    rows
                 )
-            )
             )
         );
     }

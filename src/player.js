@@ -131,7 +131,7 @@ var Player = React.createClass({
         return "none";
     },
     render: function (){
-        return <span> ({this.state.numLoaded} / {this.props.tracks.length}) : {this.selectedGain()} </span>;
+        return <span> ({this.state.numLoaded} / {this.props.tracks.length})</span>;
     }
 });
 
