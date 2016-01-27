@@ -16,7 +16,7 @@ var About = React.createClass({
                 <span className="table-button" onClick={this.onClick}>{this.state.collapsed ? "?" : "x"}</span>
                 <div style={{display: this.state.collapsed ? "none" : "block"}}>
                     <div style={{width: 720, align:'center', margin:'auto'}}>
-                        <h1>Dynamix: Reactive Mixing Specification Editor</h1>
+                        <h1>Dynamix: Parametric Mixing Specification Editor</h1>
                         <p>
                             Dynamix is a tool/thought experiment for mixing together a set of tracks 
                             by performing a zeroth order spatialization in an abstract parameter space.

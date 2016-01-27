@@ -1,4 +1,4 @@
-# Reactive Mix Specification Editor #
+# Parametric Mix Specification Editor #
 
 ## Data file syntax for version 1
 ```

@@ -32665,7 +32665,7 @@ var About = React.createClass({
                 React.createElement("span", {className: "table-button", onClick: this.onClick}, this.state.collapsed ? "?" : "x"), 
                 React.createElement("div", {style: {display: this.state.collapsed ? "none" : "block"}}, 
                     React.createElement("div", {style: {width: 720, align:'center', margin:'auto'}}, 
-                        React.createElement("h1", null, "Dynamix: Reactive Mixing Specification Editor"), 
+                        React.createElement("h1", null, "Dynamix: Parametric Mixing Specification Editor"), 
                         React.createElement("p", null, 
                             "Dynamix is a tool/thought experiment for mixing together a set of tracks" + ' ' + 
                             "by performing a zeroth order spatialization in an abstract parameter space." + ' ' +
@@ -32730,7 +32730,7 @@ var Header = React.createClass({displayName: "Header",
     render: function (){
         return (
             React.createElement("div", {className: "header", style: {height:this.props.height}}, 
-                React.createElement("h1", null, "Reactive Mix Specification Editor ")
+                React.createElement("h1", null, "Parametric Mix Specification Editor ")
             )
         );
     }

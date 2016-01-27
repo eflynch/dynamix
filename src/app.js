@@ -19,7 +19,7 @@ var Header = React.createClass({
     render: function (){
         return (
             <div className="header" style={{height:this.props.height}}>
-                <h1>Reactive Mix Specification Editor </h1>
+                <h1>Parametric Mix Specification Editor </h1>
             </div>
         );
     }
