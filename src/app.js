@@ -4,6 +4,7 @@ var $ = require('jquery');
 
 var Graph = require('./graph');
 var lib = require('./lib');
+var ChainBrowser = require('./chain-browser');
 
 var parseDistribution = lib.parseDistribution;
 var parseAxis = lib.parseAxis;
@@ -123,10 +124,22 @@ var App = React.createClass({
             tracks: update(this.state.tracks, hash)
         });
     },
+    onSelectedDeviceUpdate: function (device, sensor, value){
+        if (sensor.metric === "bmp_temperature"){
+            this.setAxisValue(0, value);
+        }
+        if (sensor.metric === "illuminance"){
+            this.setAxisValue(1, Math.log(value + 1) / Math.log(10.0) * 25.0);
+        }
+        if (sensor.metric === "sht_humidity"){
+
+        }
+    },
     render: function (){
         return (
             <div>
                 <Header height={this.props.headerHeight}/>
+                <ChainBrowser left={400} onSelectedDeviceUpdate={this.onSelectedDeviceUpdate}/>
                 <Graph axies={this.state.axies}
                        tracks={this.state.tracks}
                        width={Math.max(800, this.state.windowWidth)}
